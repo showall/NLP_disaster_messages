@@ -8,7 +8,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 import numpy as np
 from app import tokenz
-from imblearn.over_sampling import SMOTE
+#from imblearn.over_sampling import SMOTE
+from sklearn.feature_extraction.text import TfidfTransformer
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
@@ -79,15 +80,14 @@ def build_model():
 
     """
     model = Pipeline(steps=[("vect", CountVectorizer(tokenizer=tokenz.tokenize)),
-                            # ("transformer",TfidfTransformer(smooth_idf=False)),
+                            ("transformer",TfidfTransformer(smooth_idf=False)),
                             ("estimator", MultiOutputClassifier(
                                 LogisticRegression(max_iter=1000)))
                             ])
 
     parameters = {
         'estimator__estimator__C': [0.5, 0.75, 1.0],
-        'vect__ngram_range': [(1, 1), (2, 2)],
-        #  'tfidf__use_idf': (True, False)
+        'vect__ngram_range': [(1, 1), (2, 2)]
     }
 
     cv = GridSearchCV(model, param_grid=parameters, refit=True)
